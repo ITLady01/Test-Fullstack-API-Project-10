@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component} from './node_modules/react';
 import Form from './Form';
-import axios from 'axios';
+import axios from './node_modules/axios';
 
 export default class UpdateCourse extends Component {
     state = {

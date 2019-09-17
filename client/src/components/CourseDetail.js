@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import Markdown from 'react-markdown';
-import axios from 'axios';
+import React, {Component} from './node_modules/react';
+import {Link} from './node_modules/react-router-dom';
+import Markdown from './node_modules/react-markdown';
+import axios from './node_modules/axios';
 
 export default class CourseDetail extends Component {
 

@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import axios from 'axios';
+import React, {Component} from './node_modules/react';
+import {Link} from './node_modules/react-router-dom';
+import axios from './node_modules/axios';
 
 export default class Courses extends Component {
 
