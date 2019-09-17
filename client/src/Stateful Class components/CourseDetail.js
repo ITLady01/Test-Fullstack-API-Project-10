@@ -9,7 +9,7 @@ export default class CourseDetail extends Component {
         super(props);
 
         this.state = {
-            authUser: {},
+            UserAuth: {},
             course: {},
             creator: {},
             deleteClicked: false,
