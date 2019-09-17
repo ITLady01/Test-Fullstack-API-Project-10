@@ -23,8 +23,7 @@ export default ({
             }! </span> <Link to = "/signout"> Sign Out </Link> 
             </React.Fragment> :
                 <React.Fragment>
-                <Link className = "signup"
-            to = "/signup"> Sign Up </Link> <Link className = "signin"
+                <Link className = "signup"to = "/signup"> Sign Up </Link> <Link className = "signin"
             to = "/signin"> Sign In </Link> 
             </React.Fragment>
                 } </nav>
