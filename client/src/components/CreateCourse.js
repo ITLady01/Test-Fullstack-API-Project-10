@@ -61,9 +61,9 @@ export default class CreateCourse extends Component {
                         this.change
                     }
                     placeholder = "Course description..."/>
-                            </div>
-                            </div> 
-                    </div> <div className="grid-25 grid-right" >
+   </div>
+         </div> 
+        </div> <div className="grid-25 grid-right" >
                     </div>
                     <div className="course--stats" >
                     <ul className = "course--stats--list" >
