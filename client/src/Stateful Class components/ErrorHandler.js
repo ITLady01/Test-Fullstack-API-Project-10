@@ -6,3 +6,4 @@ export default () => ( <div className = "bounds" >
     <Link to = "/"
     className = "button button-secondary" > Return to Courses </Link> </div>
 );
+
