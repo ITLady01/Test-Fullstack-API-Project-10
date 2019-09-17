@@ -98,13 +98,13 @@ export default class CourseDetail extends Component {
         return (
             (this.state.loading) ?
             null :
-            <div >
+            <div>
             <div className = "actions--bar" >
             <div className = "bounds" >
             <div className = "grid-100" >
 
             {
-                deleteClicked ? ( <span >
+                deleteClicked ? ( <span>
                     <p > Are you sure you want to delete this course ? </p> 
                     <button className = "button"
                     onClick = {

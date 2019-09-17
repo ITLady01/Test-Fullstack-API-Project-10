@@ -61,9 +61,9 @@ export default class CreateCourse extends Component {
                         this.change
                     }
                     placeholder = "Course description..."/>
-                    </div>
-                     </div> 
-                    </div> <div className="grid-25 grid-right" >
+                 </div>
+           </div> 
+                </div> <div className="grid-25 grid-right" >
                     </div>
                     <div className="course--stats" >
                     <ul className = "course--stats--list" >
@@ -95,11 +95,9 @@ export default class CreateCourse extends Component {
                     placeholder = "List materials (Seperated by an asterisk and new line)"/>
   </div> 
  </li> 
-    </ul>
-    </div> 
-    </div>
-    </React.Fragment>
-                )
+</ul>
+</div> </div> 
+</React.Fragment>)
             }
             /> </div>
             </div>

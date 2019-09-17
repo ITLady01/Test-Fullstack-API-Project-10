@@ -20,7 +20,7 @@ export default (props) => {
     }
 
     return ( <div>
-        <ErrorsDisplay errors = {
+        <errorsShown errors = {
             errors
         }
         /> <form onSubmit = {
