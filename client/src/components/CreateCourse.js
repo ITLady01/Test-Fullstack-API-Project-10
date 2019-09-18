@@ -3,7 +3,7 @@ import Form from './Form';
 
 export default class CreateCourse extends Component {
     state = {
-        authUser: this.props.context.authenticatedUser.user,
+        userAuth: this.props.context.authenticatedUser.user,
         title: '',
         description: '',
         estimatedTime: '',
@@ -13,7 +13,7 @@ export default class CreateCourse extends Component {
 
     render() {
         const {
-            authUser,
+            userAuth,
             title,
             description,
             estimatedTime,
@@ -45,7 +45,7 @@ export default class CreateCourse extends Component {
                                     onChange={this.change}
                                     placeholder="Course title..." />
                                 </div>
-                            <p>By {authUser.name}</p>
+                            <p>By {userAuth.name}</p>
                             </div>
                             <div className="course--description">
                                 <div>
@@ -122,7 +122,7 @@ export default class CreateCourse extends Component {
             description,
             estimatedTime,
             materialsNeeded,
-            userId: this.state.authUser.id
+            userId: this.state.userAuth.id
           }
 
           const credentials = {

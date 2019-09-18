@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 export default ({ context }) => {
 
-  let authUser = context.authenticatedUser;
+  let userAuth = context.authenticatedUser;
 
-  if (authUser) {
-    authUser = context.authenticatedUser.user;
+  if (userAuth) {
+    userAuth = context.authenticatedUser.user;
   }
 
   return (
@@ -14,9 +14,9 @@ export default ({ context }) => {
         <div className="bounds">
           <Link to="/"><h1 className="header--logo">Courses</h1></Link>
           <nav>
-              {authUser ?
+              {userAuth ?
                     <React.Fragment>
-                        <span>Welcome, {authUser.name}!</span>
+                        <span>Welcome, {userAuth.name}!</span>
                         <Link to="/signout">Sign Out</Link>
                     </React.Fragment>
                 :

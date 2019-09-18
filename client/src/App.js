@@ -4,11 +4,7 @@ import React, {
 // import { Provider } from './components/Context';
 import './App.css';
 import {
-  BrowserRouter,
-  Route,
-  Switch,
-  Redirect
-} from 'react-router-dom';
+  BrowserRouter,Route,Switch,Redirect} from 'react-router-dom';
 
 // Import components
 import Header from './components/Header';
@@ -25,6 +21,7 @@ import Forbidden from './components/Forbidden';
 import NotFound from './components/NotFound';
 import withContext from './components/Context';
 import PrivateRoute from './PrivateRoute';
+
 
 const HeaderWithContext = withContext(Header);
 const AuthWithContext = withContext(Authenticated);

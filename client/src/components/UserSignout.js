@@ -1,10 +1,10 @@
-import React, {Component} from './node_modules/react';
+import React, {Component} from 'react';
 import Form from './Form';
-import axios from './node_modules/axios';
+import axios from 'axios';
 
 export default class UpdateCourse extends Component {
     state = {
-        UserAuth: this.props.context.authenticatedUser.user,
+        userAuth: this.props.context.authenticatedUser.user,
         id: this.props.match.params.id,
         courseURL: `/courses/${this.props.match.params.id}`,
         title: '',
@@ -29,7 +29,7 @@ export default class UpdateCourse extends Component {
                     console.log(this.state.errors);
                 } else {
                     const course = response.data;
-                    if (this.state.UserAuth.id !== course.userId) {
+                    if (this.state.userAuth.id !== course.userId) {
                         this.props.history.push('/forbidden');
                         return null;
                     }
@@ -57,7 +57,7 @@ export default class UpdateCourse extends Component {
 
     render() {
         const {
-            UserAuth,
+            userAuth,
             title,
             description,
             estimatedTime,
@@ -95,7 +95,7 @@ export default class UpdateCourse extends Component {
                     }
                     placeholder = "Course title..."/>
                     </div> <p> By {
-                        UserAuth.name
+                        userAuth.name
                     } </p> </div> <div className = "course--description" >
                     <div>
                     <textarea id = "description"

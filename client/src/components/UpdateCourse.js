@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default class UpdateCourse extends Component {
     state = {
-        authUser: this.props.context.authenticatedUser.user,
+        userAuth: this.props.context.authenticatedUser.user,
         id: this.props.match.params.id,
         courseURL: `/courses/${this.props.match.params.id}`,
         title: '',
@@ -27,7 +27,7 @@ export default class UpdateCourse extends Component {
               console.log(this.state.errors);
           } else {
             const course = response.data;
-            if (this.state.authUser.id !== course.userId) {
+            if (this.state.userAuth.id !== course.userId) {
                 this.props.history.push('/forbidden');
                 return null;
             }
@@ -55,7 +55,7 @@ export default class UpdateCourse extends Component {
 
     render() {
         const {
-            authUser,
+            userAuth,
             title,
             description,
             estimatedTime,
@@ -87,7 +87,7 @@ export default class UpdateCourse extends Component {
                                     onChange={this.change}
                                     placeholder="Course title..." />
                                 </div>
-                            <p>By {authUser.name}</p>
+                            <p>By {userAuth.name}</p>
                             </div>
                             <div className="course--description">
                                 <div>
