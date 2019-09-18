@@ -1,9 +1,5 @@
-import React, {
-  Component
-} from 'react';
-import {
-  Link
-} from 'react-router-dom';
+import React, { Component} from 'react';
+import {Link} from 'react-router-dom';
 import Form from './Form';
 
 export default class UserSignIn extends Component {
@@ -16,20 +12,14 @@ export default class UserSignIn extends Component {
   
   constructor(props) {
     super(props);
-    
-  }
+    let props = props.data.map(() =>
+      }
 
-  render() {
-    const {
-      emailAddress,
-      password,
-      errors,
-    } = this.state;
+  render() {const {emailAddress, password, errors,} = this.state;
 
     return ( <div className = "bounds" >
       <div className = "grid-33 centered signing" >
-      <h1 > Sign In </h1> <
-      Form cancel = {
+      <h1 > Sign In </h1> <Form cancel = {
         this.cancel
       }
       errors = {
@@ -40,10 +30,8 @@ export default class UserSignIn extends Component {
       }
       submitButtonText = "Sign In"
       elements = {
-        () => ( <
-          React.Fragment >
-          <
-          input id = "emailAddress"
+        () => ( <React.Fragment >
+          <input id = "emailAddress"
           name = "emailAddress"
           type = "text"
           value = {
@@ -52,7 +40,7 @@ export default class UserSignIn extends Component {
           onChange = {
             this.change
           }
-          placeholder = "Email" / >
+          placeholder = "Email"/>
           <input id = "password"
           name = "password"
           type = "password"
@@ -62,7 +50,7 @@ export default class UserSignIn extends Component {
           onChange = {
             this.change
           }
-          placeholder = "Password" / >
+          placeholder = "Password"/>
           </React.Fragment>
         )
       } /> <p>
@@ -78,9 +66,9 @@ export default class UserSignIn extends Component {
       };
     });
   }
-  submit = () => {
+   submit = () => {
     const {context} = this.props;
-    const { from } = this.props.location.state || this.props.context;
+    const {from} = this.props.location.state || this.props.context;
     const {emailAddress,password} = this.state;
     context.actions.signIn(emailAddress, password)
       .then(user => {
