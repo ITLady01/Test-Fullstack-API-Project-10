@@ -108,8 +108,7 @@ export default class CreateCourse extends Component {
     
       submit = () => {
           const { context } = this.props;
-    
-          const {
+              const {
             title,
             description,
             estimatedTime,
