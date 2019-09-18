@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default ({ context }) => {
 
-  let userAuth = context.authenticatedUser;
+let userAuth = context.authenticatedUser;
 
   if (userAuth) {
     userAuth = context.authenticatedUser.user;
