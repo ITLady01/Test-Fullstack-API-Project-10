@@ -8,7 +8,7 @@ export default ({ context }) => {
   <div className="bounds">
     <div className="grid-100">
       <h1>{userAuth.name}, your account has been created!</h1>
-      <p>Your username is {userAuth.username}</p>
+      <p>Your username is {userAuth.emailAddress}</p>
       <Link to="/" className="button button-secondary">Return to Courses</Link>
     </div>
   </div>

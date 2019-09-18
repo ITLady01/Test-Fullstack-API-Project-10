@@ -24,7 +24,7 @@ export default class CourseDetail extends Component {
 
   componentDidMount() {
     if (this.props.context.authenticatedUser) {
-      this.setState({authUser: this.props.context.authenticatedUser.user});
+      this.setState({userAuth: this.props.context.authenticatedUser.user});
     }
     this.getCourse();
     this.props.context.from = this.props.location.pathname;
@@ -141,7 +141,7 @@ export default class CourseDetail extends Component {
     const { course } = this.state;
 
     const credentials = {
-        username: this.props.context.authenticatedUser.user.username,
+        emailAddress: this.props.context.authenticatedUser.user.emailAddress,
         password: this.props.context.authenticatedUser.password
     }
 

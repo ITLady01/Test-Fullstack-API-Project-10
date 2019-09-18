@@ -126,7 +126,7 @@ export default class CreateCourse extends Component {
           }
 
           const credentials = {
-              username: this.props.context.authenticatedUser.user.username,
+              emailAddress: this.props.context.authenticatedUser.user.emailAddress,
               password: this.props.context.authenticatedUser.password
           }
     
