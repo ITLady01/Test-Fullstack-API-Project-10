@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default ({ context }) => {
+export default ( context ) => {
 
 let userAuth = context.authenticatedUser;
 
