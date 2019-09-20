@@ -1,105 +1,81 @@
-import React, {
-  Component
-} from 'react';
-import {
-  Link
-} from 'react-router-dom';
-import Form from './Form';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-export default class UserSignIn extends Component {
-
+class UserSignIn extends Component {
   state = {
-    emailAddress: '',
-    password: '',
-    errors: [],
+    emailAddress: "",
+    password: "",
   };
-  
-  constructor(props) {
-    super(props);
-    
+
+  //redirect the user to the course list
+  returnToList = (e) => {
+    e.preventDefault();
+    this.props.history.push("/");
   }
 
-  render() {
-    const {
-      emailAddress,
-      password,
-      errors,
-    } = this.state;
+  //update user email address state
+  updateUserEmailAddress = (e) => {
+    this.setState({ emailAddress: e.target.value });
+  }
 
-    return ( <div className = "bounds" >
-      <div className = "grid-33 centered signing" >
-      <h1 > Sign In </h1> <
-      Form cancel = {
-        this.cancel
-      }
-      errors = {
-        errors
-      }
-      submit = {
-        this.submit
-      }
-      submitButtonText = "Sign In"
-      elements = {
-        () => ( <
-          React.Fragment >
-          <
-          input id = "emailAddress"
-          name = "emailAddress"
-          type = "text"
-          value = {
-            emailAddress
-          }
-          onChange = {
-            this.change
-          }
-          placeholder = "Email" / >
-          <input id = "password"
-          name = "password"
-          type = "password"
-          value = {
-            password
-          }
-          onChange = {
-            this.change
-          }
-          placeholder = "Password" / >
-          </React.Fragment>
-        )
-      } /> <p>
-      Don 't have a user account? <Link to="/signup">Click here</Link> to sign up! </p> </div> </div>
+  //update user password state
+  updateUserPassword = (e) => {
+    this.setState({ password: e.target.value });
+  }
+
+  //submit handler
+  handleSubmit = (e) => {
+    e.preventDefault();
+    //abtain the global state and location of previous route
+    const { context } = this.props;
+    const { from } = this.props.location.state || { from: { pathname: "/" } };
+    //sign the user in with the user state
+    context.actions.signIn(this.state.emailAddress, this.state.password)
+      .then(user => {
+        if(user !== null) { //sign in was successful
+          user.password = this.state.password;
+          context.actions.setAuthenticatedUser(user); //set the user to the global authenticated user state
+          this.props.history.push(from); //redirect user to the route they previously visited
+        } else {
+          this.props.history.push("/forbidden"); //user is unauthorized
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.props.history.push("/error"); //there was an error, likely a server error
+      });
+  }
+
+  //render a sign-in form
+  render() {
+    return (
+      <div className="bounds">
+        <div className="grid-33 centered signin">
+          <h1>Sign In</h1>
+          <div>
+            <form onSubmit={this.handleSubmit}>
+              <div>
+                <input id="emailAddress" name="emailAddress" type="text" className=""
+                  placeholder="Email Address" value={this.state.emailAddress}
+                  onChange={this.updateUserEmailAddress} />
+              </div>
+              <div>
+                <input id="password" name="password" type="password" className=""
+                  placeholder="Password" value={this.state.password}
+                  onChange={this.updateUserPassword} />
+              </div>
+              <div className="grid-100 pad-bottom">
+                <button className="button" type="submit">Sign In</button>
+                <button className="button button-secondary" onClick={this.returnToList}>Cancel</button>
+              </div>
+            </form>
+          </div>
+          <p>&nbsp;</p>
+          <p>Don't have a user account? <Link to="/signup">Click here</Link> to sign up!</p>
+        </div>
+      </div>
     );
   }
-  change = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    this.setState(() => {
-      return {
-        [name]: value
-      };
-    });
-  }
-  submit = () => {
-    const {context} = this.props;
-    const { from } = this.props.location.state || this.props.context;
-    const {emailAddress,password} = this.state;
-    context.actions.signIn(emailAddress, password)
-      .then(user => {
-        if (user === null) {
-          this.setState(() => {
-            return {
-              errors: ['Sign-in was unsuccessful']
-            };
-          });
-        } else {
-          this.props.history.push("/");
-          console.log(`Success! ${emailAddress} is now signed in!`);
-        }
-      }).catch(err => {
-        console.log(err);
-        this.props.history.push('/error');
-      })
-  }
-  cancel = () => {
-    this.props.history.push('/');
-  }
 }
+export default withRouter(UserSignIn);

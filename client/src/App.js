@@ -1,9 +1,6 @@
-import React, {
-  Component
-} from 'react';
-// import { Provider } from './components/Context';
+import React, { Component } from 'react';
 import './App.css';
-import {  BrowserRouter,Route,Switch,Redirect} from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
 
 // Import components
 import Header from './components/Header';
