@@ -1,10 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-export default () => (
-  <div className="bounds">
-    <h1>Something Went Wrong</h1>
-    <p>Sorry, an unexpected error occurred.</p>
-    <Link to="/" className="button button-secondary">Return to Courses</Link>
-  </div>
-);
+const UnhandledError = () => {
+  return(
+    <div className="bounds">
+      <h1>Error</h1>
+      <p>Sorry! We just encountered an unexpected error.</p>
+      <button className="button button-primary btn-not-found" onClick={(e) => {e.preventDefault(); window.location.href='/';}}>Back</button>      
+    </div>
+  );
+}
+
+export default UnhandledError;

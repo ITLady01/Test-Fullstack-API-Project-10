@@ -1,162 +1,132 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Markdown from 'react-markdown';
-import axios from 'axios';
+import ReactMarkdown from "react-markdown";
+
 
 export default class CourseDetail extends Component {
 
-  constructor(props) {
-    super(props);
+  // inital state of the CourseDetail Component
+  state = {
+    course: [],
+    isuserAuth: null,
+  };
 
-    this.state = {
-      userAuth: {},
-      course: {},
-      creator: {},
-      deleteClicked: false,
-      courseURL: props.match.url,
-      errors: [],
-      loading: true
+  // FETCH single course from REST API
+  // and setState when component mounted
+  async componentDidMount() {
+    const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, "GET");
+    if (res.status === 200) {
+      return res.json().then(course => {
+        // context from props
+        const { context } = this.props;
+        // authenticated user from context
+        const userAuth = context.authenticatedUser;
+        let user = null;
+        // is user authenticated && and the course owner ?
+        if(userAuth && userAuth.id === course[0].userId) {
+          user = true;
+        }
+        // setState
+        this.setState({course: course, isuserAuth: user});
+      });
+    }else if (res.status === 404) { // not found
+      window.location.href = '/notfound';
+    }else if (res.status === 500) { // server error
+      window.location.href = '/error';
+    }else {
+      throw new Error();
     }
-    
-    this.deleteButton = this.deleteButton.bind(this);
-    this.delete = this.delete.bind(this);
   }
 
-  componentDidMount() {
-    if (this.props.context.authenticatedUser) {
-      this.setState({userAuth: this.props.context.authenticatedUser.user});
-    }
-    this.getCourse();
-    this.props.context.from = this.props.location.pathname;
-  }
 
-  getCourse() {
-    axios.get(`http://localhost:5000/api${this.state.courseURL}`)
-    .then(response => {
-      if (response.status !== 200) {
-        this.setState({ errors: response });
-      } else {
-        this.setState({ course: response.data, loading: false });
-        this.getCreator();
+  // handle DELETE of single course
+  handleDelete = async (e) => {
+      // context from props
+      const { context } = this.props;
+      // authenticated user credentials
+      const userAuth = context.authenticatedUser;
+      const username = userAuth.username;
+      const password = userAuth.password;
+
+      // ask confirmation before deleting course
+      if(window.confirm('Are you sure you want to delete this course ?')) {
+        // DELETE request to the REST API
+        const res = await context.data.api(`/courses/${this.props.match.params.id}`, "DELETE", null, true, { username, password });
+        if (res.status === 204) {
+          window.location.href = '/';
+          return [];
+        }else if (res.status === 500) {
+          window.location.href = '/error';
+        }else {
+          throw new Error();
+        }
       }
-    }).catch((err) => {
-      console.log(err);
-      this.props.history.push('/notfound');
-    });
-  }
 
-  getCreator() {
-    axios.get(`http://localhost:5000/api/users/${this.state.course.userId}`)
-    .then( response => {
-        this.setState({creator: response.data});
-    }).catch((err) => console.log(err));
-  }
+  } // end handleDelete func
 
-  deleteButton() {
-    this.setState(prevState => ({ deleteClicked: !prevState.deleteClicked }));
-  }
+
 
   render() {
-    // let list;
-    // let materials;
-    // let isCreator = false;
-    const { userAuth, course, creator, courseURL } = this.state;
-    const { deleteClicked } = this.state;
+    // course from state
+    const course = this.state.course[0];
+    // isUserAuth (and also the course owner) from state
+    const user = this.state.isuserAuth;
 
-    // if (authUser.id === creator.id) {
-    //   isCreator = true;
-    // }
-    
-    // if (course.materialsNeeded) {
-    //   if (course.materialsNeeded.includes(',')) {
-    //     materials = course.materialsNeeded.split(',');
-    //   }
-
-    //   list = materials.map((li) =>
-    //     <li key={materials.indexOf(li)}>{li}</li>
-    //   );
-    // }
-    
-    return (
-        (this.state.loading)
-        ? null
-        :
+    return(
+      <div>
+      { /* a ternary operator to render either the content or a 'fetching...' message */
+        this.state.course.length ?
         <div>
-        <div className="actions--bar">
-          <div className="bounds">
-            <div className="grid-100">
+          <div className="actions--bar">
+            <div className="bounds">
 
-              {deleteClicked ? (
-                <span>
-                  <p>Are you sure you want to delete this course?</p>
-                  <button className="button" onClick={this.delete}>Yes</button>
-                  <button className="button" onClick={this.deleteButton}>No</button>
-                </span>
-              ) : (
-                <span>
-                  {userAuth.id === course.userId ? (
+              <div className="grid-100">
+                  { /* a ternary operator to render either Update and Delete button if user is authenticated and also the course owner or nothing */
+                    user ?
                     <span>
-                      <Link to={`${courseURL}/update`} className="button">Update Course</Link>
-                      <button className="button" onClick={this.deleteButton}>Delete Course</button>
+                    <Link className="button" to={`/courses/${this.props.match.params.id}/update`}>Update Course</Link>
+                    <Link onClick={this.handleDelete} to='#' className="button">Delete Course</Link>
                     </span>
-                  ) : null }
-                </span>
-              )}
-              <Link to="/" className="button button-secondary">Return to List</Link>
+                    : null
+                  }
+                <Link className="button button-secondary" to="/">Return to List</Link>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="bounds course--detail">
-          <div className="grid-66">
-            <div className="course--header">
-              <h4 className="course--label">Course</h4>
-              <h3 className="course--title">{course.title}</h3>
-              <p>by {creator.name}</p>
+
+          <div className="bounds course--detail">
+            <div className="grid-66">
+              <div className="course--header">
+                <h4 className="course--label">Course</h4>
+                <h3 className="course--title">{course.title}</h3>
+                <p>By {course.student.firstName} {course.student.lastName}</p>
+              </div>
+              <div className="course--description">
+               <ReactMarkdown source={course.description} />
+              </div>
             </div>
-            <div className="course--description">
-              <Markdown source={course.description} />
-            </div>
-          </div>
-          <div className="grid-25 grid-right">
-            <div className="course--stats">
-              <ul className="course--stats--list">
-                 <li className="course--stats--list--item">
+            <div className="grid-25 grid-right">
+              <div className="course--stats">
+                <ul className="course--stats--list">
+                  <li className="course--stats--list--item">
                     <h4>Estimated Time</h4>
                     <h3>{course.estimatedTime}</h3>
                   </li>
                   <li className="course--stats--list--item">
                     <h4>Materials Needed</h4>
-                    <Markdown source={course.materialsNeeded} />
+                    <ul>
+                    <ReactMarkdown source={course.materialsNeeded} />
+                    </ul>
                   </li>
-              </ul>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
+        :
+        <h3>Fetching Data...</h3>
+      }
       </div>
     );
-  }
-
-  delete = () => {
-
-    const { course } = this.state;
-
-    const credentials = {
-        emailAddress: this.props.context.authenticatedUser.user.emailAddress,
-        password: this.props.context.authenticatedUser.password
-    }
-
-    this.props.context.data.delete(course, credentials)
-    .then( response => {
-        if (response.status !== 204) {
-          this.setState({ errors: response });
-          console.log(this.state.errors);
-        } else {
-          this.props.history.push('/');
-          return response;
-        }
-    }).catch( err => {
-        console.log(err);
-        this.props.history.push('/error');
-    });
-}
-}
+  } // end render()
+} // end CourseDetail Component

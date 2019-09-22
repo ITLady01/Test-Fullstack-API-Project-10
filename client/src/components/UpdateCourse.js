@@ -1,193 +1,161 @@
 import React, { Component } from 'react';
-import Form from './Form';
-import axios from 'axios';
+
 
 export default class UpdateCourse extends Component {
-    state = {
-        userAuth: this.props.context.authenticatedUser.user,
-        id: this.props.match.params.id,
-        courseURL: `/courses/${this.props.match.params.id}`,
-        title: '',
-        description: '',
-        estimatedTime: '',
-        materialsNeeded: '',
-        userId: '',
-        errors: []
+
+  // inital state of the UpdateCourse Component
+  state = {
+    title: '',
+    description: '',
+    estimatedTime: '',
+    materialsNeeded: '',
+    userId: '',
+    errors: [],
+  }
+
+  // // change func to handle form inputs
+  change = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    this.setState(() => {
+      return {
+        [name]: value
+      };
+    });
+  }
+
+  // GET request to the REST API for the single course when component mounted
+  async componentDidMount() {
+    // GET request
+    const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, 'GET');
+    if (res.status === 200) {
+      return res.json().then(course => this.setState({
+        // setState course details of the fetched course
+        title: course[0].title,
+        description: course[0].description,
+        estimatedTime: course[0].estimatedTime,
+        materialsNeeded: course[0].materialsNeeded,
+        userId: course[0].userId,
+      }));
+    }else if (res.status === 404) { // not found
+      window.location.href = '/notfound';
+    }else if (res.status === 500) { // server error
+      window.location.href = '/error';
+    }else {
+      throw new Error();
     }
+  }
 
-    componentDidMount() {
-        this.getCourse();
+  // checks if authenticated user is the course owner,
+  // if not redirect to '/forbidden'
+  componentDidUpdate() {
+    // context from props
+    const { context } = this.props;
+    // authenticated user from context
+    const userAuth = context.authenticatedUser;
+    // course id from state
+    const courseUserId = this.state.userId;
+    // if the authenticated user is NOT the course owner
+    if(userAuth.id !== courseUserId) {
+      window.location.href = '/forbidden';
     }
+  }
 
-    getCourse() {
-        axios.get(`http://localhost:5000/api${this.state.courseURL}`)
-        .then(response => {
-          if (response.status !== 200) {
-              this.setState({ errors: response });
-              console.log(this.state.errors);
-          } else {
-            const course = response.data;
-            if (this.state.userAuth.id !== course.userId) {
-                this.props.history.push('/forbidden');
-                return null;
-            }
-            if (course.estimatedTime === null) {
-                course.estimatedTime = '';
-            }
-            if (course.materialsNeeded === null) {
-                course.materialsNeeded = '';
-            }
-            this.setState({
-                title: course.title,
-                description: course.description,
-                estimatedTime: course.estimatedTime,
-                materialsNeeded: course.materialsNeeded,
-                userId: course.userId
-            });
-          }
-        }).catch((err) => {
-            console.log(err);
-            this.props.history.push('/notfound');
-        });
+
+  // FUNC that handles a PUT request to the REST API to update the course
+  handleUpdate = async (e) => {
+    e.preventDefault();
+    // context from props
+    const { context } = this.props;
+    // authenticated user from context
+    const userAuth = context.authenticatedUser;
+    // authenticated user credentials
+    const userAuthId = userAuth.id;
+    const username = userAuth.username;
+    const password = userAuth.password;
+    // data to be sent
+    const data = this.state;
+    // append authenticated user id to data
+    data.userId = userAuthId;
+
+    // PUT request
+    const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'PUT', data, true, { username, password } );
+    if (res.status === 204) { // updated
+      this.setState({errors: []});
+      window.location.href = `/courses/${this.props.match.params.id}`;
+    }else if (res.status === 400) { // bad request
+      return res.json().then(data => {
+        this.setState({errors: data.errors});
+      });
     }
+    // else if (res.status === 401) { // access denied
+    //   return null; // show message or something
+    // }
+    else if (res.status === 500) {
+      window.location.href = '/error';
+    }else {
+      throw new Error();
+    }
+  }
 
 
 
-    render() {
-        const {
-            userAuth,
-            title,
-            description,
-            estimatedTime,
-            materialsNeeded,
-            errors
-        } = this.state;
-        
-        return (
-            <div className="bounds course--detail">
-                <h1>Update Course</h1>
-                <div>
-                    <Form 
-                    cancel={this.cancel}
-                    errors={errors}
-                    submit={this.submit}
-                    submitButtonText="Update Course"
-                    elements={ () => (
-                        <React.Fragment>
-                        <div className="grid-66">
-                            <div className="course--header">
-                                <h4 className="course--label">Course</h4>
-                                <div>
-                                    <input
-                                    id="title"
-                                    name="title"
-                                    type="text"
-                                    className="input-title course--title--input"
-                                    value={title} 
-                                    onChange={this.change}
-                                    placeholder="Course title..." />
-                                </div>
-                            <p>By {userAuth.name}</p>
-                            </div>
-                            <div className="course--description">
-                                <div>
-                                    <textarea
-                                    id="description"
-                                    name="description" 
-                                    value={description} 
-                                    onChange={this.change}
-                                    placeholder="Course description..." />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid-25 grid-right">
-                            <div className="course--stats">
-                                <ul className="course--stats--list">
-                                    <li className="course--stats--list--item">
-                                        <h4>Estimated Time</h4>
-                                        <div>
-                                            <input
-                                            id="estimatedTime"
-                                            name="estimatedTime"
-                                            type="text"
-                                            className="course--time--input"
-                                            value={estimatedTime} 
-                                            onChange={this.change}
-                                            placeholder="___ Hours" />
-                                        </div>
-                                    </li>
-                                    <li className="course--stats--list--item">
-                                        <h4>Materials Needed</h4>
-                                        <div>
-                                            <textarea
-                                            id="materialsNeeded" 
-                                            name="materialsNeeded" 
-                                            value={materialsNeeded} 
-                                            onChange={this.change}
-                                            placeholder="List materials (Seperated by commas)" />
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        </React.Fragment>
-                    )} />
+  render() {
+
+    return(
+      <div className="bounds course--detail">
+        <h1>Update Course</h1>
+        <div>
+        {/* ternary operator -> validation errors ? show them : show nothing */}
+        {
+          this.state.errors.length ?
+          <div>
+            <h2 className="validation--errors--label">Validation errors</h2>
+            <div className="validation-errors">
+              <ul>
+                {this.state.errors.map((error, i) => <li key={i}>{error}</li>)}
+              </ul>
             </div>
+          </div> : null
+        }
+          <form onSubmit={this.handleUpdate}>
+            <div className="grid-66">
+              <div className="course--header">
+                <h4 className="course--label">Course</h4>
+                <div><input id="title" name="title" type="text" onChange={this.change} value={this.state.title}  className="input-title course--title--input" placeholder="Course title..."/></div>
+                <p>By  </p>
+              </div>
+              <div className="course--description">
+                <div>
+                  <textarea id="description" name="description" onChange={this.change} value={this.state.description} className="" placeholder="Course description..." ></textarea>
+                </div>
+              </div>
+            </div>
+            <div className="grid-25 grid-right">
+              <div className="course--stats">
+                <ul className="course--stats--list">
+                  <li className="course--stats--list--item">
+                    <h4>Estimated Time</h4>
+                    <div><input id="estimatedTime" name="estimatedTime" type="text" onChange={this.change} value={this.state.estimatedTime} className="course--time--input"
+                        placeholder="Hours"  /></div>
+                  </li>
+                  <li className="course--stats--list--item">
+                    <h4>Materials Needed</h4>
+                    <div>
+                     <textarea id="materialsNeeded" name="materialsNeeded" onChange={this.change} value={this.state.materialsNeeded} className="" placeholder="List materials..." ></textarea>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="grid-100 pad-bottom">
+              <button className="button" type="submit">Update Course</button>
+              <button className="button button-secondary" onClick={(e) => {e.preventDefault(); window.location.href=`/courses/${this.props.match.params.id}`;}}>Cancel</button>
+            </div>
+          </form>
         </div>
-        );
-    }
-
-    change = (event) => {
-        const { name } = event.target;
-        const { value }= event.target;
-    
-        this.setState(() => {
-          return {
-            [name]: value
-          };
-        });
-      }
-    
-      submit = () => {
-          const { context } = this.props;
-    
-          const {
-            id,
-            title,
-            description,
-            estimatedTime,
-            materialsNeeded
-          } = this.state;
-    
-          // Updated course payload
-          const course = {
-            id,
-            title,
-            description,
-            estimatedTime,
-            materialsNeeded
-          }
-
-          const credentials = {
-              emailAddress: this.props.context.authenticatedUser.user.emailAddress,
-              password: this.props.context.authenticatedUser.password
-          }
-    
-          context.data.update(course, credentials)
-          .then( response => {
-              if (response.status !== 204) {
-                this.setState({ errors: response });
-              } else {
-                this.props.history.push(`/courses/${id}`);
-                return response;
-              }
-          }).catch( err => {
-              console.log(err);
-              this.props.history.push('/error');
-          });
-      }
-    
-      cancel = () => {
-          this.props.history.push(`/courses/${this.state.id}`);
-      }
+      </div>
+    );
+  }
 }
