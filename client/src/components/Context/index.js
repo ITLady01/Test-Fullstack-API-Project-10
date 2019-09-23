@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 
 // creating a Context and assign it to a variable
 // this will set the 'Provider' and 'Consumer' objs
-const AppContext = React.createContext();
+const Context = React.createContext();
 // now we have both the Provider and the Consumer objs available
 // which we can export and use them in other modules.
 
@@ -67,16 +67,16 @@ export class Provider extends Component {
   }
 
   return(
-    <AppContext.Provider value={value} >
+    <Context.Provider value={value} >
       {this.props.children}
-    </AppContext.Provider>
+    </Context.Provider>
   );
 } // end render
 } // end class Provider
 
 
 // export Consumer as a variable
-export const Consumer = AppContext.Consumer;
+export const Consumer = Context.Consumer;
 
 /**
  * A higher-order component that wraps the provided component in a Context Consumer component.
@@ -87,9 +87,9 @@ export const Consumer = AppContext.Consumer;
 export default function withContext(Component) {
   return function ContextComponent(props) {
     return (
-      <AppContext.Consumer>
+      <Context.Consumer>
         {context => <Component {...props} context={context} />}
-      </AppContext.Consumer>
+      </Context.Consumer>
     );
   }
 }
