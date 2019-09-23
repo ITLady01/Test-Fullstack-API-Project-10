@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-
+import './global.css';
 // import components
 import Header from './components/Header';
 import Courses from './components/Courses';
@@ -18,6 +18,8 @@ import withContext from './components/Context';
 // HOC functional component that wraps an instance of the <Route/> component
 // used for making some routes that require authentication private
 import PrivateRoute from './PrivateRoute';
+
+
 
 // components with Context
 const HeaderContx = withContext(Header);

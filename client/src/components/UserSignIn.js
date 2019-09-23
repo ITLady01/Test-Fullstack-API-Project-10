@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-
 export default class UserSignIn extends Component {
   // initial state
   state = {
-    username: '',
+    emailAddress: '',
     password: '',
     errors: [],
   }
 
   // change func to handle form inputs
-  change = (event) => {
+  update = (event) => {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -29,13 +28,13 @@ export default class UserSignIn extends Component {
     const { from } = this.props.location.state || {from: { pathname: '/' }};
     // form values from state
     const {
-      username,
+      emailAddress,
       password
     } = this.state;
 
     // now we can sign-in calling signIn from context
     // which calls getUser method from Data.js to authenticate the user
-    context.actions.signIn(username, password)
+    context.actions.signIn(emailAddress, password)
       .then( user => {
         if (user === null) {
           this.setState(() => {
@@ -58,7 +57,7 @@ export default class UserSignIn extends Component {
     //console.log(this.props.location)
     // user credentials from state
     const {
-      username,
+      emailAddress,
       password
     } = this.state;
 
@@ -79,8 +78,8 @@ export default class UserSignIn extends Component {
           }
           <div>
             <form onSubmit={this.submit}>
-              <div><input id="username" name="username" type="text" className="" placeholder="Email Address" onChange={this.change} value={username} /></div>
-              <div><input id="password" name="password" type="password" className="" placeholder="Password" onChange={this.change} value={password} /></div>
+              <div><input id="emailAddress" name="emailAddress" type="text" className="" placeholder="Email Address" onChange={this.update} value={emailAddress} /></div>
+              <div><input id="password" name="password" type="password" className="" placeholder="Password" onChange={this.update} value={password} /></div>
               <div className="grid-100 pad-bottom">
                 <button className="button" type="submit">Sign In</button>
                 <button className="button button-secondary" onClick={(e)=> {e.preventDefault(); window.location.href='/';}}>Cancel</button>

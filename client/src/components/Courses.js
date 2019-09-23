@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import CourseCard from './CourseCard';
+import CourseID from './CourseID';
 
 export default class Courses extends Component {
 
@@ -28,7 +28,7 @@ export default class Courses extends Component {
 
       <div className="bounds">
         {/*mapping through courses, returns courses cards*/}
-        {this.state.courses.map(course => <CourseCard title={course.title} key={course.id} id={course.id} />)}
+        {this.state.courses.map(course => <CourseID title={course.title} key={course.id} id={course.id} />)}
 
         {/*the following is a card that creates a new course (maybe deseves it's own component ?)*/}
         <div className="grid-33">

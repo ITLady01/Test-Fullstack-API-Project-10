@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-
 export default class UpdateCourse extends Component {
 
   // inital state of the UpdateCourse Component
@@ -72,7 +71,7 @@ export default class UpdateCourse extends Component {
     const userAuth = context.authenticatedUser;
     // authenticated user credentials
     const userAuthId = userAuth.id;
-    const username = userAuth.username;
+    const username = userAuth.emailAddress;
     const password = userAuth.password;
     // data to be sent
     const data = this.state;

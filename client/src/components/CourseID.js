@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const CourseCard = (props) => {
+const CourseID = (props) => {
   return(
     <div className="grid-33">
       <Link className="course--module course--link" to={`/courses/${props.id}`}>
@@ -12,4 +12,4 @@ const CourseCard = (props) => {
   );
 }
 
-export default CourseCard;
+export default CourseID;

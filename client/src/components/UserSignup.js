@@ -14,8 +14,8 @@ export default class UserSignUp extends Component {
 
   }
 
-  // change func to handle form inputs
-  change = (event) => {
+  // update func to handle form inputs
+  update = (event) => {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -68,6 +68,13 @@ export default class UserSignUp extends Component {
           this.setState({ errors: errors });
         } else {
           this.setState({ errors: []});
+          //if the user is signed up successfully, automatically sign them in to the site
+          context.actions.signIn(emailAddress, password)
+            .then(user => {
+              user.password = password;
+              context.actions.setAuthenticatedUser(user); //set the user state to the global authenticated user state
+              this.props.history.push(from); //redirect the user to the route they previously visited
+            })
           // after the new user is created we automatically sign-in and redirect to '/'
           context.actions.signIn(emailAddress, password)
             .then( user => this.props.history.push(from))
@@ -124,12 +131,12 @@ export default class UserSignUp extends Component {
           }
           <div>
             <form onSubmit={this.submit}>
-              <div><input id="firstName" name="firstName" type="text" className="" placeholder="First Name" onChange={this.change} value={firstName}/></div>
-              <div><input id="lastName" name="lastName" type="text" className="" placeholder="Last Name" onChange={this.change} value={lastName}/></div>
-              <div><input id="emailAddress" name="emailAddress" type="text" className="" placeholder="Email Address" onChange={this.change} value={emailAddress}/></div>
-              <div><input id="password" name="password" type="password" className="" placeholder="Password" onChange={this.change} value={password} /></div>
+              <div><input id="firstName" name="firstName" type="text" className="" placeholder="First Name" onChange={this.update} value={firstName}/></div>
+              <div><input id="lastName" name="lastName" type="text" className="" placeholder="Last Name" onChange={this.update} value={lastName}/></div>
+              <div><input id="emailAddress" name="emailAddress" type="text" className="" placeholder="Email Address" onChange={this.update} value={emailAddress}/></div>
+              <div><input id="password" name="password" type="password" className="" placeholder="Password" onChange={this.update} value={password} /></div>
               <div><input id="confirmPassword" name="confirmPassword" type="password" className="" placeholder="Confirm Password"
-                 onChange={this.change} value={confirmPassword}/></div>
+                 onChange={this.update} value={confirmPassword}/></div>
               <div className="grid-100 pad-bottom">
                 <button className="button" type="submit">Sign Up</button>
                 <button className="button button-secondary" onClick={(e) => {e.preventDefault(); window.location.href='/';}}>Cancel</button>

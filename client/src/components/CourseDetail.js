@@ -8,7 +8,7 @@ export default class CourseDetail extends Component {
   // inital state of the CourseDetail Component
   state = {
     course: [],
-    isuserAuth: null,
+    isUserAuth: null,
   };
 
   // FETCH single course from REST API
@@ -27,7 +27,7 @@ export default class CourseDetail extends Component {
           user = true;
         }
         // setState
-        this.setState({course: course, isuserAuth: user});
+        this.setState({course: course, isUserAuth: user});
       });
     }else if (res.status === 404) { // not found
       window.location.href = '/notfound';
@@ -45,7 +45,7 @@ export default class CourseDetail extends Component {
       const { context } = this.props;
       // authenticated user credentials
       const userAuth = context.authenticatedUser;
-      const username = userAuth.username;
+      const username = userAuth.emailAddress;
       const password = userAuth.password;
 
       // ask confirmation before deleting course
@@ -70,7 +70,7 @@ export default class CourseDetail extends Component {
     // course from state
     const course = this.state.course[0];
     // isUserAuth (and also the course owner) from state
-    const user = this.state.isuserAuth;
+    const user = this.state.isUserAuth;
 
     return(
       <div>

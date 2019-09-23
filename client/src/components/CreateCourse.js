@@ -10,8 +10,8 @@ export default class CreateCourse extends Component {
     errors: [],
   }
 
-  // change func to handle form inputs
-  change = (event) => {
+  // update func to handle form inputs
+  update = (event) => {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -89,13 +89,13 @@ export default class CreateCourse extends Component {
               <div className="course--header">
                 <h4 className="course--label">Course</h4>
                 <div>
-                  <input id="title" name="title" type="text" onChange={this.change} value={title} className="input-title course--title--input" placeholder="Course title..." />
+                  <input id="title" name="title" type="text" onChange={this.update} value={title} className="input-title course--title--input" placeholder="Course title..." />
                 </div>
                 <p>By {userAuth.firstName} {userAuth.lastName}</p>
               </div>
               <div className="course--description">
                 <div>
-                  <textarea id="description" name="description" onChange={this.change} value={description} className="" placeholder="Course description..."></textarea>
+                  <textarea id="description" name="description" onChange={this.update} value={description} className="" placeholder="Course description..."></textarea>
                 </div>
               </div>
             </div>
@@ -105,13 +105,13 @@ export default class CreateCourse extends Component {
                   <li className="course--stats--list--item">
                     <h4>Estimated Time</h4>
                     <div>
-                      <input id="estimatedTime" name="estimatedTime" type="text" onChange={this.change} value={estimatedTime} className="course--time--input"
+                      <input id="estimatedTime" name="estimatedTime" type="text" onChange={this.update} value={estimatedTime} className="course--time--input"
                         placeholder="Hours" /><
                     /div>
                   </li>
                   <li className="course--stats--list--item">
                     <h4>Materials Needed</h4>
-                    <div><textarea id="materialsNeeded" name="materialsNeeded" onChange={this.change} value={materialsNeeded} className="" placeholder="List materials..."></textarea></div>
+                    <div><textarea id="materialsNeeded" name="materialsNeeded" onChange={this.update} value={materialsNeeded} className="" placeholder="List materials..."></textarea></div>
                   </li>
                 </ul>
               </div>
