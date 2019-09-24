@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 
 class CourseDetail extends Component {
     _isMounted = false;
-    state = {
+      state = {
         course: [],
         userInfo: [],
         isUserAuth: true,
@@ -14,9 +14,8 @@ class CourseDetail extends Component {
     /* GET course details from REST API */
     async componentDidMount() {
         //set the component mount status
-        this._isMounted =true;
-        fetch(`${this.props.baseURL}/courses/${this.props.match.params.id}`)
-        const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, 'GET');    // calls api() method to return details for a specified course
+        // fetch(`${this.props.baseURL}/courses/${this.props.match.params.id}`)
+        const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, 'GET'); // calls api() method to return details for a specified course
         if (res.status === 200) {
             return res.json().then(course => {
                 const { context } = this.props;
@@ -25,8 +24,7 @@ class CourseDetail extends Component {
                 if (authUser && authUser.id === course.course.userId) {     // if user owns the requested course, allow access
                     user = true;
                 }
-                this.setState({
-                    course: course.course,
+                this.setState({course: course.course,
                     userInfo: course.course.user,
                     isUserAuth: user,
                 });
@@ -123,7 +121,7 @@ class CourseDetail extends Component {
                         </div>
                     </div>
                 ) : (
-                        <h3>Loading Course Information..</h3>
+                        <h3>Populating the Course Information..</h3>
                     )}
             </div>
         );
