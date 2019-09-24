@@ -24,7 +24,7 @@ export default class Data {
     // Check if auth is required
     if (requiresAuth) {
       // encode the username and password credentials passed to the api() method
-      const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
+      const encodedCredentials = btoa(`${credentials.emailAddress}:${credentials.password}`);
       // set the Authorization Headers in the option obj
       options.headers['Authorization'] = `Basic ${encodedCredentials}`;
     }
@@ -34,8 +34,8 @@ export default class Data {
 
   // makes a GET request to the '/users' endpoint
   // and returns a json obj with users credentials
-  async getUser(username, password) {
-    const response = await this.api(`/users`, 'GET', null, true, { username, password });
+  async getUser(emailAddress, password) {
+    const response = await this.api(`/users`, 'GET', null, true, { emailAddress, password });
     if (response.status === 200) {
       return response.json().then(data => data);
     }

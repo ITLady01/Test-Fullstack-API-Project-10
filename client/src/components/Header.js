@@ -5,16 +5,16 @@ const Header = (props) => {
   // context from props
   const { context } = props;
   // authenticated user from context
-  const userAuth = context.authenticatedUser;
+  const authUser = context.authenticatedUser;
 
   return(
     <div className="header">
       <div className="bounds">
         <h1 onClick={() => window.location.href = '/'} className="header--logo">Courses</h1>
         {
-          userAuth ?
+          authUser ?
           <nav>
-            <span>Welcome, {userAuth.firstName}!</span>
+            <span>Welcome, {authUser.firstName}!</span>
             <NavLink className="signout" to="/signout">Sign Out</NavLink>
           </nav> :
           <nav>

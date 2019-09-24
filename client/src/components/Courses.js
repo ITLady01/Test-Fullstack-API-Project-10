@@ -25,9 +25,8 @@ export default class Courses extends Component {
 
   render() {
     return (
-
       <div className="bounds">
-        {/*mapping through courses, returns courses cards*/}
+        {/*mapping through courses, returns courses ID*/}
         {this.state.courses.map(course => <CourseID title={course.title} key={course.id} id={course.id} />)}
 
         {/*the following is a card that creates a new course (maybe deseves it's own component ?)*/}

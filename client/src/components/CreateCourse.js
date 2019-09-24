@@ -1,128 +1,124 @@
+/* Stateful class component */
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
-export default class CreateCourse extends Component {
-  // inital state of the CreateCourse Component
-  state = {
-    title: '',
-    description: '',
-    estimatedTime: '',
-    materialsNeeded: '',
-    errors: [],
-  }
+class CreateCourse extends Component {
+    state = {
+        title: '',
+        description: '',
+        estimatedTime: '',
+        materialsNeeded: '',
+        errors: [],
+    }
 
-  // update func to handle form inputs
-  update = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
+    /* input handler */
+    update = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
 
-    this.setState(() => {
-      return {
-        [name]: value
-      };
-    });
-  }
-
-  // FUNC that handles a POST request to the REST API to create a new course
-  handleSubmit = async (e) => {
-    e.preventDefault();
-    // context from props
-    const { context } = this.props;
-    // authenticated user from context
-    const userAuth = context.authenticatedUser;
-    // authenticated user credentials
-    const userAuthId = userAuth.id;
-    const username = userAuth.username;
-    const password = userAuth.password;
-    // data from state, to be sent
-    const data = this.state;
-    // append authenticated user id to data
-    data.userId = userAuthId;
-
-    // POST request
-    const res = await context.data.api("/courses", "POST", data, true, {username, password});
-      if (res.status === 201) { // created
-        // go back to "/"
-        window.location.href = "/";
-      }else if (res.status === 400) { // bad request
-        return res.json().then(data => {
-          this.setState({errors: data.errors});
+        this.setState(() => {
+            return {
+                [name]: value
+            };
         });
-      }else if (res.status === 500) {
-        window.location.href = '/error';
-      }else {
-        throw new Error();
-      }
-  } // end handleSubmit func
+    }
 
+    /* create handler */
+    handleSubmit = async (e) => {
+        e.preventDefault();
+        const { context } = this.props;
+        const userAuth = context.authenticatedUser;
+        const userAuthId = userAuth.id;
+        const emailAddress = userAuth.emailAddress;
+        const password = userAuth.password;
+        const data = this.state;
+        data.userId = userAuthId;
 
-  render() {
-    // form values from state
-    const {
-      title,
-      description,
-      estimatedTime,
-      materialsNeeded
-    } = this.state;
-    // context from props
-    const { context } = this.props;
-    // authenticated user from context
-    const userAuth = context.authenticatedUser;
-
-    return(
-      <div className="bounds course--detail">
-        <h1>Create Course</h1>
-        <div>
-        {/* ternary operator -> validation errors ? show them : show nothing */}
-        {
-          this.state.errors.length ?
-          <div>
-            <h2 className="validation--errors--label">Validation errors</h2>
-            <div className="validation-errors">
-              <ul>
-                {this.state.errors.map((error, i) => <li key={i}>{error}</li>)}
-              </ul>
-            </div>
-          </div> : null
+        /* API POST request */
+        const res = await context.data.api('/courses', 'POST', data, true, { emailAddress, password });
+        console.log(emailAddress);
+        console.log(password);
+        if (res.status === 200 || res.status === 201) {     // if status 200 or 201, redirect user to main page 
+            window.location.href = '/';
+        } else if (res.status === 400) {     // status 400, display error message
+            this.setState({
+                errors: ['Please check that all field inputs are correct']
+            })
+            return;
+        } else if (res.status === 401 || res.status === 403) {     // if status 401 or 403 display forbidden message
+            window.location.href = '/forbidden';
+        } else {
+            window.location.href = '/error';      // display error page
         }
-          <form onSubmit={this.handleSubmit}>
-            <div className="grid-66">
-              <div className="course--header">
-                <h4 className="course--label">Course</h4>
+    }
+
+    render() {
+        const {
+            title,
+            description,
+            estimatedTime,
+            materialsNeeded
+        } = this.state;
+
+        const { context } = this.props;
+        const userAuth = context.authenticatedUser;
+
+        return (
+            <div className="bounds course--detail">
+                <h1>Create Course</h1>
                 <div>
-                  <input id="title" name="title" type="text" onChange={this.update} value={title} className="input-title course--title--input" placeholder="Course title..." />
+                    {
+                        this.state.errors.length ?
+                            <div>
+                                <h2 className="validation--errors--label">Validation errors</h2>
+                                <div className="validation-errors">
+                                    <ul>
+                                        {this.state.errors.map((error, i) => <li key={i}>{error}</li>)}
+                                    </ul>
+                                </div>
+                            </div> : null
+                    }
+                    <form onSubmit={this.handleSubmit}>
+                        <div className="grid-66">
+                            <div className="course--header">
+                                <h4 className="course--label">Course</h4>
+                                <div>
+                                    <input id="title" name="title" type="text" onChange={this.update} value={title} className="input-title course--title--input" placeholder="Course title..." />
+                                </div>
+                                <p>By {userAuth.firstName} {userAuth.lastName}</p>
+                            </div>
+                            <div className="course--description">
+                                <div>
+                                    <textarea id="description" name="description" onChange={this.update} value={description} className="" placeholder="Course description..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid-25 grid-right">
+                            <div className="course--stats">
+                                <ul className="course--stats--list">
+                                    <li className="course--stats--list--item">
+                                        <h4>Estimated Time</h4>
+                                        <div>
+                                            <input id="estimatedTime" name="estimatedTime" type="text" onChange={this.update} value={estimatedTime} className="course--time--input"
+                                                placeholder="Hours" />
+                                        </div>
+                                    </li>
+                                    <li className="course--stats--list--item">
+                                        <h4>Materials Needed</h4>
+                                        <div><textarea id="materialsNeeded" name="materialsNeeded" onChange={this.update} value={materialsNeeded} className="" placeholder="List materials..."></textarea></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="grid-100 pad-bottom">
+                            <button className="button" type="submit">Create Course</button>
+                            <Link className="button button-secondary" to="/">Cancel</Link>
+                        </div>
+                    </form>
                 </div>
-                <p>By {userAuth.firstName} {userAuth.lastName}</p>
-              </div>
-              <div className="course--description">
-                <div>
-                  <textarea id="description" name="description" onChange={this.update} value={description} className="" placeholder="Course description..."></textarea>
-                </div>
-              </div>
             </div>
-            <div className="grid-25 grid-right">
-              <div className="course--stats">
-                <ul className="course--stats--list">
-                  <li className="course--stats--list--item">
-                    <h4>Estimated Time</h4>
-                    <div>
-                      <input id="estimatedTime" name="estimatedTime" type="text" onChange={this.update} value={estimatedTime} className="course--time--input"
-                        placeholder="Hours" /><
-                    /div>
-                  </li>
-                  <li className="course--stats--list--item">
-                    <h4>Materials Needed</h4>
-                    <div><textarea id="materialsNeeded" name="materialsNeeded" onChange={this.update} value={materialsNeeded} className="" placeholder="List materials..."></textarea></div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="grid-100 pad-bottom">
-              <button className="button" type="submit">Create Course</button>
-              <button className="button button-secondary" onClick={(e) => {e.preventDefault(); window.location.href='/';}}>Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
+
+export default CreateCourse;
