@@ -53,11 +53,11 @@ export default class UpdateCourse extends Component {
     // context from props
     const { context } = this.props;
     // authenticated user from context
-    const userAuth = context.authenticatedUser;
+    const authUser = context.authenticatedUser;
     // course id from state
     const courseUserId = this.state.userId;
     // if the authenticated user is NOT the course owner
-    if(userAuth.id !== courseUserId) {
+    if(authUser.id !== courseUserId) {
       window.location.href = '/forbidden';
     }
   }
@@ -69,15 +69,15 @@ export default class UpdateCourse extends Component {
     // context from props
     const { context } = this.props;
     // authenticated user from context
-    const userAuth = context.authenticatedUser;
+    const authUser = context.authenticatedUser;
     // authenticated user credentials
-    const userAuthId = userAuth.id;
-    const username = userAuth.emailAddress;
-    const password = userAuth.password;
+    const authUserId = authUser.id;
+    const username = authUser.emailAddress;
+    const password = authUser.password;
     // data to be sent
     const data = this.state;
     // append authenticated user id to data
-    data.userId = userAuthId;
+    data.userId = authUserId;
 
     // PUT request
     const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'PUT', data, true, { username, password } );

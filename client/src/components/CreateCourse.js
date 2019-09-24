@@ -24,15 +24,15 @@ class CreateCourse extends Component {
     }
 
     /* create handler */
-    handleSubmit = async (e) => {
+    submit = async (e) => {
         e.preventDefault();
         const { context } = this.props;
-        const userAuth = context.authenticatedUser;
-        const userAuthId = userAuth.id;
-        const emailAddress = userAuth.emailAddress;
-        const password = userAuth.password;
+        const authUser = context.authenticatedUser;
+        const authUserId = authUser.id;
+        const emailAddress = authUser.emailAddress;
+        const password = authUser.password;
         const data = this.state;
-        data.userId = userAuthId;
+        data.userId = authUserId;
 
         /* API POST request */
         const res = await context.data.api('/courses', 'POST', data, true, { emailAddress, password });
@@ -61,7 +61,7 @@ class CreateCourse extends Component {
         } = this.state;
 
         const { context } = this.props;
-        const userAuth = context.authenticatedUser;
+        const authUser = context.authenticatedUser;
 
         return (
             <div className="bounds course--detail">
@@ -78,14 +78,14 @@ class CreateCourse extends Component {
                                 </div>
                             </div> : null
                     }
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.submit}>
                         <div className="grid-66">
                             <div className="course--header">
                                 <h4 className="course--label">Course</h4>
                                 <div>
                                     <input id="title" name="title" type="text" onChange={this.update} value={title} className="input-title course--title--input" placeholder="Course title..." />
                                 </div>
-                                <p>By {userAuth.firstName} {userAuth.lastName}</p>
+                                <p>By {authUser.firstName} {authUser.lastName}</p>
                             </div>
                             <div className="course--description">
                                 <div>

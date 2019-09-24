@@ -20,9 +20,9 @@ class CourseDetail extends Component {
         if (res.status === 200) {
             return res.json().then(course => {
                 const { context } = this.props;
-                const userAuth = context.authenticatedUser;
+                const authUser = context.authenticatedUser;
                 let user;
-                if (userAuth && userAuth.id === course.course.userId) {     // if user owns the requested course, allow access
+                if (authUser && authUser.id === course.course.userId) {     // if user owns the requested course, allow access
                     user = true;
                 }
                 this.setState({
@@ -49,9 +49,9 @@ class CourseDetail extends Component {
     /* DELETE course handler */
     handleDelete = async (e) => {
         const { context } = this.props;
-        const userAuth = context.authenticatedUser;
-        const emailAddress = userAuth.emailAddress;
-        const password = userAuth.password;
+        const authUser = context.authenticatedUser;
+        const emailAddress = authUser.emailAddress;
+        const password = authUser.password;
 
         if (window.confirm('Are you sure you want to delete this course?')) {
             const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'DELETE', null, true, { emailAddress, password });  // calls api() method to delete course
@@ -71,7 +71,7 @@ class CourseDetail extends Component {
     render() {
         const { course } = this.state;
         const { userInfo } = this.state;
-        const { isUserAuth } = this.state;
+        const { isauthUser } = this.state;
 
         return (
             <div>
@@ -80,7 +80,7 @@ class CourseDetail extends Component {
                         <div className="actions--bar">
                             <div className="bounds">
                                 <div className="grid-100">
-                                    {isUserAuth ? (
+                                    {isauthUser ? (
                                         <span>
                                             <Link className="button" to={`/courses/${this.props.match.params.id}/update`}> Update Course </Link>
                                             <Link onClick={this.handleDelete} to="#" className="button"> Delete Course </Link>
