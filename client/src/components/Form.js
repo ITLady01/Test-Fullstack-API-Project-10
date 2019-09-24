@@ -1,53 +1,56 @@
 import React from 'react';
 
+/* exports a function that renders any validation errors sent from the API via the <ErrorsDisplay> function component */
 export default (props) => {
-  const {
-    cancel,
-    errors,
-    submit,
-    submitButtonText,
-    elements,
-  } = props;
+    const {
+        cancel,
+        errors,
+        submit,
+        submitButtonText,
+        elements,
+    } = props;
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    submit();
-  }
+    /* renders submit button of a form and handles functionality */
+    function handleSubmit(event) {
+        event.preventDefault();
+        submit();
+    }
 
-  function handleCancel(event) {
-    event.preventDefault();
-    cancel();
-  }
+    /* renders cancel button of a form and handles functionality */
+    function handleCancel(event) {
+        event.preventDefault();
+        cancel();
+    }
 
-  return (
-    <div>
-      <ErrorsShown errors={errors} />
-      <form onSubmit={handleSubmit}>
-        {elements()}
-        <div className="pad-bottom">
-          <button className="button logIn" type="submit">{submitButtonText}</button>
-          <button className="button button-secondary logIn" onClick={handleCancel}>Cancel</button>
+    return (
+        <div>
+            <ErrorsDisplay errors={errors} />
+            <form onSubmit={handleSubmit}>
+                {elements()}
+                <div className='pad-bottom'>
+                    <button className='button' type='submit'>{submitButtonText}</button>
+                    <button className='button button-secondary' onClick={handleCancel}>Cancel</button>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
-  );
+    );
 }
 
-function ErrorsShown({ errors }) {
-  let ErrorsShown = null;
+function ErrorsDisplay({ errors }) {
+    let errorsDisplay = null;
 
-  if (errors.length) {
-    ErrorsShown = (
-      <div>
-        <h2 className="validation--errors--label">Errors</h2>
-        <div className="validation-errors">
-          <ul>
-            {errors.map((error, i) => <li key={i}>{error}</li>)}
-          </ul>
-        </div>
-      </div>
-    );
-  }
+    if (errors.length) {
+        errorsDisplay = (
+            <div>
+                <h2 className='validation--errors--label'>Validation errors</h2>
+                <div className='validation-errors'>
+                    <ul>
+                        {errors.map((error, i) => <li key={i}>{error}</li>)}
+                    </ul>
+                </div>
+            </div>
+        );
+    }
 
-  return ErrorsShown;
+    return errorsDisplay;
 }

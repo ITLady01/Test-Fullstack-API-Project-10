@@ -1,81 +1,92 @@
+/* Stateful class component */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import Form from './Form';
 
 class UserSignIn extends Component {
-  state = {
-    emailAddress: "",
-    password: "",
-  };
+    state = {
+        emailAddress: '',
+        password: '',
+        errors: [],
+    }
 
-  //redirect the user to the course list
-  returnToList = (e) => {
-    e.preventDefault();
-    this.props.history.push("/");
-  }
+    /* handles state change */
+    update = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
 
-  //update user email address state
-  updateUserEmailAddress = (e) => {
-    this.setState({ emailAddress: e.target.value });
-  }
+        this.setState(() => {
+            return {
+                [name]: value
+            };
+        });
+    }
 
-  //update user password state
-  updateUserPassword = (e) => {
-    this.setState({ password: e.target.value });
-  }
+    /* submit function */
+    submit = () => {  // log in an authenticated user upon submitting the 'Sign In' form
+        // event.preventDefault();
+        const { context } = this.props;
+        const { from } = this.props.location.state || { from: { pathname: '/authenticated'} };
+        const { emailAddress, password } = this.state;
 
-  //submit handler
-  handleSubmit = (e) => {
-    e.preventDefault();
-    //abtain the global state and location of previous route
-    const { context } = this.props;
-    const { from } = this.props.location.state || { from: { pathname: "/" } };
-    //sign the user in with the user state
-    context.actions.signIn(this.state.emailAddress, this.state.password)
-      .then(user => {
-        if(user !== null) { //sign in was successful
-          user.password = this.state.password;
-          context.actions.setAuthenticatedUser(user); //set the user to the global authenticated user state
-          this.props.history.push(from); //redirect user to the route they previously visited
-        } else {
-          this.props.history.push("/forbidden"); //user is unauthorized
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        this.props.history.push("/error"); //there was an error, likely a server error
-      });
-  }
+        context.actions.signIn(emailAddress, password)    // accepts two arguments to log in a registered user
+            .then((user) => {
+                if (user === null) {        // if returned promise value is null, return error validation message
+                    this.setState(() => {
+                        return { errors: ['Sign-in was unsuccessful'] };
+                    });
+                } else {        // if user object is returned, navigate user to the /authenticated route 
+                    this.props.history.push(from);
+                    console.log('Success! You\'re now signed in!');
+                }
+            })
+            .catch((error) => {     // handle rejected promise returned by signIn()
+                console.error(error);
+                this.props.history.push('/error');    // navigate user from /signin to /error
+            });
+    }
+    cancel = () => {
+        this.props.history.push('/');   // redirects user back to the home route upon clicking 'Cancel' button
+    }
 
-  //render a sign-in form
-  render() {
-    return (
-      <div className="bounds">
-        <div className="grid-33 centered signin">
-          <h1>Sign In</h1>
-          <div>
-            <form onSubmit={this.handleSubmit}>
-              <div>
-                <input id="emailAddress" name="emailAddress" type="text" className=""
-                  placeholder="Email Address" value={this.state.emailAddress}
-                  onChange={this.updateUserEmailAddress} />
-              </div>
-              <div>
-                <input id="password" name="password" type="password" className=""
-                  placeholder="Password" value={this.state.password}
-                  onChange={this.updateUserPassword} />
-              </div>
-              <div className="grid-100 pad-bottom">
-                <button className="button" type="submit">Sign In</button>
-                <button className="button button-secondary" onClick={this.returnToList}>Cancel</button>
-              </div>
-            </form>
-          </div>
-          <p>&nbsp;</p>
-          <p>Don't have a user account? <Link to="/signup">Click here</Link> to sign up!</p>
-        </div>
-      </div>
-    );
-  }
+    render() {
+        const {
+            emailAddress,
+            password,
+            errors,
+        } = this.state;
+
+        return (
+            <div className='bounds'>
+                <div className='grid-33 centered signin'>
+                    <h1>Sign In</h1>
+                    <Form
+                        cancel={this.cancel}
+                        errors={errors}
+                        submit={this.submit}
+                        submitButtonText='Sign In'
+                        elements={() => (
+                            <React.Fragment>
+                                <input id='emailAddress'
+                                    name='emailAddress'
+                                    type='text'
+                                    className=''
+                                    value={emailAddress}
+                                    onChange={this.update}
+                                    placeholder='Email Address' />
+                                <input id='password'
+                                    name='password'
+                                    type='password'
+                                    className=''
+                                    value={password}
+                                    onChange={this.update}
+                                    placeholder='Password' />
+                            </React.Fragment>
+                        )} />
+                    <p>Don't have a user account? <Link to={'/signup'}>Click here</Link> to sign up!</p>
+                </div>
+            </div>
+        );
+    }
 }
-export default withRouter(UserSignIn);
+export default UserSignIn;

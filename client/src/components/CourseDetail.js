@@ -1,162 +1,132 @@
+/* Stateful class component */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Markdown from 'react-markdown';
-import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
-export default class CourseDetail extends Component {
+class CourseDetail extends Component {
+    _isMounted = false;
+    state = {
+        course: [],
+        userInfo: [],
+        isUserAuth: true,
+    };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      userAuth: {},
-      course: {},
-      creator: {},
-      deleteClicked: false,
-      courseURL: props.match.url,
-      errors: [],
-      loading: true
-    }
-    
-    this.deleteButton = this.deleteButton.bind(this);
-    this.delete = this.delete.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.props.context.authenticatedUser) {
-      this.setState({userAuth: this.props.context.authenticatedUser.user});
-    }
-    this.getCourse();
-    this.props.context.from = this.props.location.pathname;
-  }
-
-  getCourse() {
-    axios.get(`http://localhost:5000/api${this.state.courseURL}`)
-    .then(response => {
-      if (response.status !== 200) {
-        this.setState({ errors: response });
-      } else {
-        this.setState({ course: response.data, loading: false });
-        this.getCreator();
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.props.history.push('/notfound');
-    });
-  }
-
-  getCreator() {
-    axios.get(`http://localhost:5000/api/users/${this.state.course.userId}`)
-    .then( response => {
-        this.setState({creator: response.data});
-    }).catch((err) => console.log(err));
-  }
-
-  deleteButton() {
-    this.setState(prevState => ({ deleteClicked: !prevState.deleteClicked }));
-  }
-
-  render() {
-    // let list;
-    // let materials;
-    // let isCreator = false;
-    const { userAuth, course, creator, courseURL } = this.state;
-    const { deleteClicked } = this.state;
-
-    // if (authUser.id === creator.id) {
-    //   isCreator = true;
-    // }
-    
-    // if (course.materialsNeeded) {
-    //   if (course.materialsNeeded.includes(',')) {
-    //     materials = course.materialsNeeded.split(',');
-    //   }
-
-    //   list = materials.map((li) =>
-    //     <li key={materials.indexOf(li)}>{li}</li>
-    //   );
-    // }
-    
-    return (
-        (this.state.loading)
-        ? null
-        :
-        <div>
-        <div className="actions--bar">
-          <div className="bounds">
-            <div className="grid-100">
-
-              {deleteClicked ? (
-                <span>
-                  <p>Are you sure you want to delete this course?</p>
-                  <button className="button" onClick={this.delete}>Yes</button>
-                  <button className="button" onClick={this.deleteButton}>No</button>
-                </span>
-              ) : (
-                <span>
-                  {userAuth.id === course.userId ? (
-                    <span>
-                      <Link to={`${courseURL}/update`} className="button">Update Course</Link>
-                      <button className="button" onClick={this.deleteButton}>Delete Course</button>
-                    </span>
-                  ) : null }
-                </span>
-              )}
-              <Link to="/" className="button button-secondary">Return to List</Link>
-            </div>
-          </div>
-        </div>
-        <div className="bounds course--detail">
-          <div className="grid-66">
-            <div className="course--header">
-              <h4 className="course--label">Course</h4>
-              <h3 className="course--title">{course.title}</h3>
-              <p>by {creator.name}</p>
-            </div>
-            <div className="course--description">
-              <Markdown source={course.description} />
-            </div>
-          </div>
-          <div className="grid-25 grid-right">
-            <div className="course--stats">
-              <ul className="course--stats--list">
-                 <li className="course--stats--list--item">
-                    <h4>Estimated Time</h4>
-                    <h3>{course.estimatedTime}</h3>
-                  </li>
-                  <li className="course--stats--list--item">
-                    <h4>Materials Needed</h4>
-                    <Markdown source={course.materialsNeeded} />
-                  </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  delete = () => {
-
-    const { course } = this.state;
-
-    const credentials = {
-        emailAddress: this.props.context.authenticatedUser.user.emailAddress,
-        password: this.props.context.authenticatedUser.password
-    }
-
-    this.props.context.data.delete(course, credentials)
-    .then( response => {
-        if (response.status !== 204) {
-          this.setState({ errors: response });
-          console.log(this.state.errors);
+    /* GET course details from REST API */
+    async componentDidMount() {
+        //set the component mount status
+        this._isMounted =true;
+        fetch(`${this.props.baseURL}/courses/${this.props.match.params.id}`)
+        const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, 'GET');    // calls api() method to return details for a specified course
+        if (res.status === 200) {
+            return res.json().then(course => {
+                const { context } = this.props;
+                const authUser = context.authenticatedUser;
+                let user;
+                if (authUser && authUser.id === course.course.userId) {     // if user owns the requested course, allow access
+                    user = true;
+                }
+                this.setState({
+                    course: course.course,
+                    userInfo: course.course.user,
+                    isUserAuth: user,
+                });
+            });
+        } else if (res.status === 403) {
+            window.location.href = '/forbidden';
+        } else if (res.status === 404) {
+            console.log("/Not Found");
+            window.location.href = '/notfound';
+        } else if (res.status === 500) {
+            window.location.href = '/error';
         } else {
-          this.props.history.push('/');
-          return response;
+            throw new Error();
         }
-    }).catch( err => {
-        console.log(err);
-        this.props.history.push('/error');
-    });
+    }
+  //unmount the component, important for 404/not found error handling to prevent memory leaks
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+    /* DELETE course handler */
+    handleDelete = async (e) => {
+        const { context } = this.props;
+        const authUser = context.authenticatedUser;
+        const emailAddress = authUser.emailAddress;
+        const password = authUser.password;
+
+        if (window.confirm('Are you sure you want to delete this course?')) {
+            const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'DELETE', null, true, { emailAddress, password });  // calls api() method to delete course
+            if (res.status === 204) {
+                window.location.href = '/';
+                return [];
+            } else if (res.status === 403) {
+                window.location.href = '/forbidden';
+            } else if (res.status === 500) {
+                window.location.href = '/error';
+            } else {
+                throw new Error();
+            }
+        }
+    }
+
+    render() {
+        const { course } = this.state;
+        const { userInfo } = this.state;
+        const { isauthUser } = this.state;
+
+        return (
+            <div>
+                {this.state.course ? (
+                    <div>
+                        <div className="actions--bar">
+                            <div className="bounds">
+                                <div className="grid-100">
+                                    {isauthUser ? (
+                                        <span>
+                                            <Link className="button" to={`/courses/${this.props.match.params.id}/update`}> Update Course </Link>
+                                            <Link onClick={this.handleDelete} to="#" className="button"> Delete Course </Link>
+                                        </span>
+                                    ) : null}
+                                    <Link className="button button-secondary" to="/"> Return to  Courses List </Link>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bounds course--detail">
+                            <div className="grid-66">
+                                <div className="course--header">
+                                    <h4 className="course--label">Course</h4>
+                                    <h3 className="course--title">{course.title}</h3>
+                                    <p>
+                                        By {userInfo.firstName} {userInfo.lastName}
+                                    </p>
+                                </div>
+                                <div className="course--description">
+                                    <ReactMarkdown source={course.description} />
+                                </div>
+                            </div>
+                            <div className="grid-25 grid-right">
+                                <div className="course--stats">
+                                    <ul className="course--stats--list">
+                                        <li className="course--stats--list--item">
+                                            <h4>Estimated Time</h4>
+                                            <h3>{course.estimatedTime}</h3>
+                                        </li>
+                                        <li className="course--stats--list--item">
+                                            <h4>Materials Needed</h4>
+                                            <ul>
+                                                <ReactMarkdown source={course.materialsNeeded} />
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                        <h3>Loading Course Information..</h3>
+                    )}
+            </div>
+        );
+    }
 }
-}
+export default CourseDetail;
