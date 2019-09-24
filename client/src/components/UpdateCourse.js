@@ -72,7 +72,7 @@ export default class UpdateCourse extends Component {
     const authUser = context.authenticatedUser;
     // authenticated user credentials
     const authUserId = authUser.id;
-    const username = authUser.emailAddress;
+    const emailAddress = authUser.emailAddress;
     const password = authUser.password;
     // data to be sent
     const data = this.state;
@@ -80,7 +80,7 @@ export default class UpdateCourse extends Component {
     data.userId = authUserId;
 
     // PUT request
-    const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'PUT', data, true, { username, password } );
+    const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'PUT', data, true, { emailAddress, password } );
     if (res.status === 204) { // updated
       this.setState({errors: []});
       window.location.href = `/courses/${this.props.match.params.id}`;

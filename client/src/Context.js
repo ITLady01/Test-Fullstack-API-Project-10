@@ -41,8 +41,8 @@ export class Provider extends Component {
     }
 
     /* user sign-in */
-    signIn = async (username, password) => {
-        const user = await this.data.getUser(username, password);   // calls getUser() in Data.js, which makes a GET request to the protected /users route on the server & returns user data
+    signIn = async (emailAddress, password) => {
+        const user = await this.data.getUser(emailAddress, password);   // calls getUser() in Data.js, which makes a GET request to the protected /users route on the server & returns user data
         if (user !== null) {
             this.setState(() => {
                 return {
@@ -58,16 +58,16 @@ export class Provider extends Component {
     }
 
     /* update course for associated user */
-    updateCourse = async (course, id, { username, password }) => {
-        const updatedCourse = await this.data.updateCourseDetail(course, id, { username, password });
+    updateCourse = async (course, id, { emailAddress, password }) => {
+        const updatedCourse = await this.data.updateCourseDetail(course, id, { emailAddress, password });
         if (updatedCourse) {
             return updatedCourse
         };
     }
 
     /* create course for associated user */
-    createCourse = async (course, {username, password }) => {
-        const createdCourse = await this.data.createCourse(course, { username, password });
+    createCourse = async (course, {emailAddress, password }) => {
+        const createdCourse = await this.data.createCourse(course, { emailAddress, password });
         if (createdCourse) {
             return createdCourse;
         };

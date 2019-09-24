@@ -34,6 +34,7 @@ class CourseDetail extends Component {
         } else if (res.status === 403) {
             window.location.href = '/forbidden';
         } else if (res.status === 404) {
+            console.log("/Not Found");
             window.location.href = '/notfound';
         } else if (res.status === 500) {
             window.location.href = '/error';
