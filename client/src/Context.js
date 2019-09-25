@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import Data from './Data';
-import Cryptr from 'cryptr';
+// import Cryptr from 'cryptr';
 
 const Context = React.createContext();
 
@@ -17,14 +17,14 @@ export class Provider extends Component {
     constructor() {
         super();
         this.data = new Data();
-        this.cryptr = new Cryptr('Hashpassword');
+        // this.cryptr = new Cryptr('Hashpassword');
     }
 
     
     /* user sign-in */
     signIn = async (emailAddress, password) => {
         const user = await this.data.getUser(emailAddress, password);   // calls getUser() in Data.js, which makes a GET request to the protected /users route on the server & returns user data
-        const hashPassword = this.cryptr.encrypt(password);
+        // const hashPassword = this.cryptr.encrypt(password);
         if (user !== null) {
             this.setState(() => {
 
@@ -72,11 +72,11 @@ export class Provider extends Component {
             authenticatedUser,
             userPassword,
             data: this.data,
-            cryptr: this.cryptr,
+            // cryptr: this.cryptr,
             actions: {              // add the 'actions' property and object
                 signIn: this.signIn,
                 signOut: this.signOut,
-                signUp: this.signUp,
+                // signUp: this.signUp,
                 updateCourse: this.updateCourse,
                 createCourse: this.createCourse,
                 deleteCourse: this.deleteCourse
