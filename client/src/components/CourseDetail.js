@@ -4,28 +4,27 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
 class CourseDetail extends Component {
-    _isMounted = false;
-      state = {
+        state = {
         course: [],
         userInfo: [],
-        isUserAuth: true,
+        isUserAuth: null,
     };
 
     /* GET course details from REST API */
     async componentDidMount() {
         //set the component mount status
-        // fetch(`${this.props.baseURL}/courses/${this.props.match.params.id}`)
         const res = await this.props.context.data.api(`/courses/${this.props.match.params.id}`, 'GET'); // calls api() method to return details for a specified course
         if (res.status === 200) {
             return res.json().then(course => {
                 const { context } = this.props;
                 const authUser = context.authenticatedUser;
                 let user;
-                if (authUser && authUser.id === course.course.userId) {     // if user owns the requested course, allow access
+                if (authUser && authUser.id === course.userInfo) { // if user owns the requested course, allow access
                     user = true;
                 }
-                this.setState({course: course.course,
-                    userInfo: course.course.user,
+                this.setState({
+                    course: course,
+                    userInfo: course.user,
                     isUserAuth: user,
                 });
             });
@@ -49,11 +48,12 @@ class CourseDetail extends Component {
     handleDelete = async (e) => {
         const { context } = this.props;
         const authUser = context.authenticatedUser;
-        const emailAddress = authUser.emailAddress;
+        const username = authUser.emailAddress;
         const password = authUser.password;
 
+          // ask confirmation before deleting course    
         if (window.confirm('Are you sure you want to delete this course?')) {
-            const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'DELETE', null, true, { emailAddress, password });  // calls api() method to delete course
+            const res = await context.data.api(`/courses/${this.props.match.params.id}`, 'DELETE', null, true, { username, password });  // calls api() method to delete course
             if (res.status === 204) {
                 window.location.href = '/';
                 return [];
@@ -65,27 +65,29 @@ class CourseDetail extends Component {
                 throw new Error();
             }
         }
-    }
+    }// end handleDelete func
 
     render() {
+        const {context} =this.state;
         const { course } = this.state;
         const { userInfo } = this.state;
-        const { isauthUser } = this.state;
-
+        const { isUserAuth} = this.state;
+        const authUser = context.authenticatedUser;
         return (
             <div>
-                {this.state.course ? (
+                {this.state.course.length ? (
                     <div>
                         <div className="actions--bar">
                             <div className="bounds">
                                 <div className="grid-100">
-                                    {isauthUser ? (
-                                        <span>
+                                     // if the auth user has the auth user id and is equal to the person using the course then allow them to see buttons
+                                     {authUser && authUser.id === userInfo.id ?(
+                                          <span>
                                             <Link className="button" to={`/courses/${this.props.match.params.id}/update`}> Update Course </Link>
                                             <Link onClick={this.handleDelete} to="#" className="button"> Delete Course </Link>
                                         </span>
                                     ) : null}
-                                    <Link className="button button-secondary" to="/"> Return to  Courses List </Link>
+                                    <Link className="button button-secondary" to="/"> Return to List </Link>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +114,7 @@ class CourseDetail extends Component {
                                         <li className="course--stats--list--item">
                                             <h4>Materials Needed</h4>
                                             <ul>
-                                                <ReactMarkdown source={course.materialsNeeded} />
+                                         <ReactMarkdown source={course.materialsNeeded} />
                                             </ul>
                                         </li>
                                     </ul>
@@ -121,10 +123,10 @@ class CourseDetail extends Component {
                         </div>
                     </div>
                 ) : (
-                        <h3>Populating the Course Information..</h3>
+                        <h3> Course Details are populating..</h3>
                     )}
             </div>
         );
     }
 }
-export default CourseDetail;
+export default CourseDetail;        

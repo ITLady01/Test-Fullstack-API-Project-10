@@ -18,15 +18,15 @@ export default class Data {
         }
 
         if (requiresAuth) {       // check if authorization is required
-            const encodedCredentials = btoa(`${credentials.emailAddress}:${credentials.password}`);   // encode the user credentials with btoa() method which creates a base-64 encoded ASCII string from a "string" of data
+            const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);   // encode the user credentials with btoa() method which creates a base-64 encoded ASCII string from a "string" of data
             options.headers['Authorization'] = `Basic ${encodedCredentials}`;   // set the HTTP Authorization request header to the Basic Authentication type
         }
         return fetch(url, options);
     }
 
     /* GET request to the /users endpoint and returns a JSON object containing user credentials */
-    async getUser(emailAddress, password) {
-        const response = await this.api(`/users`, 'GET', null, true, { emailAddress, password });   // calls api() method to return authenticated user
+    async getUser(username, password) {
+        const response = await this.api(`/users`, 'GET', null, true, { username, password });   // calls api() method to return authenticated user
         if (response.status === 200) {
             return response.json().then(data => data);
         }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import Data from './Data';
+import Cryptr from 'cryptr';
 
 const Context = React.createContext();
 
@@ -16,35 +17,17 @@ export class Provider extends Component {
     constructor() {
         super();
         this.data = new Data();
+        this.cryptr = new Cryptr('Hashpassword');
     }
 
-    render() {
-        const { authenticatedUser, userPassword } = this.state;
-        const value = {             // value object provides the utility methods of the class Data
-            authenticatedUser,
-            userPassword,
-            data: this.data,
-            actions: {              // add the 'actions' property and object
-                signIn: this.signIn,
-                signOut: this.signOut,
-                signUp: this.signUp,
-                updateCourse: this.updateCourse,
-                createCourse: this.createCourse,
-                deleteCourse: this.deleteCourse
-            },
-        };
-        return (                              // pass context to provider 
-            <Context.Provider value={value}>
-                {this.props.children}
-            </Context.Provider>
-        );
-    }
-
+    
     /* user sign-in */
     signIn = async (emailAddress, password) => {
         const user = await this.data.getUser(emailAddress, password);   // calls getUser() in Data.js, which makes a GET request to the protected /users route on the server & returns user data
+        const hashPassword = this.cryptr.encrypt(password);
         if (user !== null) {
             this.setState(() => {
+
                 return {
                     authenticatedUser: user,
                     userPassword: password
@@ -64,7 +47,11 @@ export class Provider extends Component {
             return updatedCourse
         };
     }
-
+    deleteCourse = async (course,id, { emailAddress, password }) => {
+        const courseDeleted = await this.data.deleteCourse(course,id, { emailAddress, password });
+        if (courseDeleted) {
+            return courseDeleted
+        };
     /* create course for associated user */
     createCourse = async (course, {emailAddress, password }) => {
         const createdCourse = await this.data.createCourse(course, { emailAddress, password });
@@ -79,9 +66,32 @@ export class Provider extends Component {
         Cookies.remove('authenticatedUser');
     }
 }
+     render() {
+        const { authenticatedUser, userPassword } = this.state;
+        const value = {  // value object provides the utility methods of the class Data
+            authenticatedUser,
+            userPassword,
+            data: this.data,
+            cryptr: this.cryptr,
+            actions: {              // add the 'actions' property and object
+                signIn: this.signIn,
+                signOut: this.signOut,
+                signUp: this.signUp,
+                updateCourse: this.updateCourse,
+                createCourse: this.createCourse,
+                deleteCourse: this.deleteCourse
+            },
+        };
+        return (  // pass context to provider 
+            <Context.Provider value={value}>
+                {this.props.children}
+            </Context.Provider>
+        );
+    }// end render
+ // end class Provider
 
 /* create consumer */
-export const Consumer = Context.Consumer;
+ export const Consumer = Context.Consumer;
 
 /**
  * a higher-order component that wraps the provided component in a Context Consumer component

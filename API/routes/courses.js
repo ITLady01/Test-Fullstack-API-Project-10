@@ -19,8 +19,13 @@ router.get('/', (req, res, next) => {
                       'materialsNeeded', 
                       'userId'
                     ],
-        $sort: { id: 1 }    
-    })
+                include: [{
+                model: User,
+                as: 'user',
+                attributes: ['id', 'firstName', 'lastName', 'emailAddress','password']
+            }]
+       
+            })
     .then((results) => {
         if (!results) {
             // Log error and set status code if there's a problem retrieving the courses
@@ -48,8 +53,13 @@ router.get('/:id', (req, res, next) => {
             'estimatedTime',
             'materialsNeeded',
             'userId'
-        ]
-      })
+        ],
+        include: [{
+                model: User,
+                as: 'user',
+                attributes: ['id', 'firstName', 'lastName', 'emailAddress','password']
+            }]
+    })
     .then((course) => {
         if (!course) {
             // Log error and set status code if there's a problem retrieving the courses
