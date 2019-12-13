@@ -13,7 +13,7 @@
   "devDependencies": {
     "install": "^0.13.0",
     "nodemon": "^1.18.3",
-    "npm": "^6.11.3",
+    "npm": "^6.13.4",
     "sequelize-cli": "^5.5.1"
   },
   "dependencies": {
